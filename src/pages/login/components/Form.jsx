@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { LoadingButton } from "@mui/lab";
 import {
-  Button,
   Stack,
   TextField,
   Typography,
@@ -11,13 +11,13 @@ import {
   FormControl,
   FormHelperText,
 } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import smuct_logo from "../../../assets/pictures/smuct.svg";
 import axios from "axios";
 import { dev } from "../../../config/config";
 
 const Form = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const theme = useTheme();
   const [select, setSelect] = useState("");
   const [select_helperText, setSelect_helperText] = useState(null);
@@ -25,29 +25,61 @@ const Form = () => {
   const [password, setPassword] = useState(null);
   const [isError, setIsError] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const loginInfoSubmitHandle = () => {
     if (select === "") {
       setSelect_helperText("Required*");
     } else {
+        setIsError("bla bla test for hide password errorMessage")
+      setIsLoading(true);
       setSelect_helperText(null);
-     select===10 && axios({
-        method: "post",
-        url: `${dev.url}/api/v1/students/login`,
-        data: {
-          studentId: id,
-          password: password,
-        },
-      })
-        .then((res) => {
-            localStorage.setItem("authorization", res.data.token);
-            if (res.data.success===true) navigate("/");
-          console.log(res);
+      //?=========| Student Login Api call |===========
+      select === 10 &&
+        axios({
+          method: "post",
+          url: `${dev.url}/api/v1/students/login`,
+          data: {
+            studentId: id,
+            password: password,
+          },
         })
-        .catch((err) => {
-        setIsError(err.response.data.errors[0].param);
-        setErrorMessage(err.response.data.errors[0].msg);
-        });
-       select===20 && console.log({ select, id, password });
+          .then((res) => {
+            localStorage.setItem("authorization", res.data.token);
+            if (res.data.success === true) {
+              setIsLoading(false);
+              navigate("/");
+            }
+            //   console.log(res);
+          })
+          .catch((err) => {
+            setIsLoading(false);
+            setIsError(err.response.data.errors[0].param);
+            setErrorMessage(err.response.data.errors[0].msg);
+          });
+      //   console.log(errorMessage, isError);
+      //=========| Teacher Login Api Call |============
+      select === 20 &&
+        axios({
+          method: "post",
+          url: `${dev.url}/api/v1/teachers/login`,
+          data: {
+            teacherId: id,
+            password: password,
+          },
+        })
+          .then((res) => {
+            localStorage.setItem("authorization", res.data.token);
+            if (res.data.success === true) {
+              setIsLoading(false);
+              navigate("/");
+            }
+            //   console.log(res);
+          })
+          .catch((err) => {
+            setIsLoading(false);
+            setIsError(err.response.data.errors[0].param);
+            setErrorMessage(err.response.data.errors[0].msg);
+          });
     }
   };
   return (
@@ -116,8 +148,13 @@ const Form = () => {
       </FormControl>
       <TextField
         size="small"
-        error={isError === "studentId" ? true : false}
-        helperText={isError === "studentId" && errorMessage}
+        error={
+          isError === "studentId" || isError === "teacherId" ? true : false
+        }
+        helperText={
+          errorMessage && isError !== "password" && errorMessage
+          //   (isError === "studentId") | (isError === "teacherId") && errorMessage
+        }
         label={select === 10 ? "Student ID" : "Teacher ID"}
         onChange={(e) => setId(e.target.value)}
         sx={{
@@ -131,7 +168,6 @@ const Form = () => {
           },
         }}
       />
-
       <TextField
         type={"password"}
         error={isError === "password" ? true : false}
@@ -150,7 +186,8 @@ const Form = () => {
           },
         }}
       />
-      <Button
+      <LoadingButton
+        loading={isLoading}
         sx={{
           width: "210.4px",
           color: "otherColor.main",
@@ -160,7 +197,7 @@ const Form = () => {
         onClick={loginInfoSubmitHandle}
       >
         Submit
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 };
