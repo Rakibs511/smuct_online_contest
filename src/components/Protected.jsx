@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Protected = (props) => {
   const { Pages } = props;
   const navigate = useNavigate();
-  useEffect(() => {
+  useLayoutEffect(() => {
     const authorization = localStorage.getItem("authorization");
     if (!authorization) navigate("/login");
   });
