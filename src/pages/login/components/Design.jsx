@@ -1,10 +1,10 @@
 import React from "react";
 import Lottie from "lottie-react";
 import programming_animation from "../../../assets/animations/programming_animation.json";
-import { Box, Stack,Typography,useTheme } from "@mui/material";
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 
 const Design = () => {
-    const theme = useTheme();
+  const theme = useTheme();
   return (
     <Stack
       direction={"column"}

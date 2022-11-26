@@ -11,8 +11,10 @@ const NavBar = () => {
   const [isTeacher, setIsTeacher] = useState(null);
   const isLoading = useSelector((state) => state.linearProgressSlice.isLoading);
   useLayoutEffect(() => {
-    const authorization = localStorage.getItem("authorization").split(" ")[1];
-    const decode = jwtDecode(authorization);
+    const authorization =
+      localStorage.getItem("authorization") !== null ??
+      localStorage.getItem("authorization").split(" ")[1];
+    const decode = authorization ?? jwtDecode(authorization);
     setIsTeacher(decode.teacherId);
   }, [isTeacher]);
   //   console.log(isLoading);
